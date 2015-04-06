@@ -5,7 +5,7 @@
 	@if(title.contains(menuName)){ active}
 }
 
-<div class="navbar navbar-default navbar-fixed-top" role="navigation" style="background: rgba(4, 68, 152, 1);">
+<div class="navbar navbar-default navbar-fixed-top" role="navigation" style="background: rgba(4, 68, 152, 1);border-bottom: 3px solid rgba(200, 200, 200, 0.83);">
 	<div class="container" style="background: rgba(4, 68, 152, 5);">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -15,7 +15,7 @@
 				<span class="icon-bar"></span>
 			</button>
 			
-			<a class="navbar-brand" href="/">MCWS</a>
+			<a class="navbar-brand" href="/" style="color: rgba(251, 196, 39, 1); font-size: 22px; font-style: oblique;">MCWS</a>
 			
 		</div>
 		
@@ -38,22 +38,6 @@
 						
 					</ul>
 					</li>
-				    @if(user == None){
-					<li class="@getActive("Admin Login", selectedMenu)"><a id="adminPanel" href="/login">Admin Login</a></li>}
-					@if(user != None) {
-					<li class="dropdown">
-					<a  id="menuItem" href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <b class="caret"></b></a>
-					<ul class="dropdown-menu active">
-					<li><a id="brandForm" href="/admin/brandForm">Add Mobile Brand</a></li>
-					<li><a id="createMobileModel" href="/admin/modelRegistrationForm">Add Mobile Model</a></li>
-					<li><a id="createMobileModel" href="/admin/changeMobileRegType">Change Status</a></li>
-					<li><a href="/admin/mobiles?status=pending">List of Requests</a></li>
-					<li><a href="admin/auditpage">Audit</a></li>					
-					<li><a id="logout" href="/logout">Logout</a></li>
-					</ul>
-					</li>
-					} 
-				
 			</ul>
 			
 		</div><!--/.nav-collapse -->

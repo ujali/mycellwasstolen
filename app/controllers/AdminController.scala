@@ -31,6 +31,13 @@ class AdminController(mobileRepo: MobileRepository, auditRepo: AuditRepository, 
     mapping(
       "imeiMeid" -> nonEmptyText)(MobileStatus.apply)(MobileStatus.unapply))
 
+  def adminHome : Action[AnyContent] = withAuth { username =>
+    implicit request =>
+      Logger.info("AdminController:adminHome -> called.")
+      val user: Option[User] = Cache.getAs[User](username)
+      Ok(views.html.admin.adminIndex("Welcome", user))
+  }
+
   /**
    * Renders MobileUser Page
    * @param status, mobile status(pending, approved and proofdemanded)
@@ -41,7 +48,6 @@ class AdminController(mobileRepo: MobileRepository, auditRepo: AuditRepository, 
       Logger.info("AdminController:mobiles -> called.")
       val user: Option[User] = Cache.getAs[User](username)
       val mobiles = mobileRepo.getAllMobilesUserWithBrandAndModel(status)
-      Logger.info("mobiles Admin Controller::::" + mobiles)
       Ok(views.html.admin.mobiles(status, mobiles, user))
   }
 
@@ -134,7 +140,7 @@ class AdminController(mobileRepo: MobileRepository, auditRepo: AuditRepository, 
    * Changes mobile status to clean or stolen
    * @param imeiId of mobile
    * @return success or error page
-   **/
+   */
   def changeMobileRegType(imeiId: String): Action[AnyContent] = withAuth { username =>
     implicit request =>
       Logger.info("AdminController:changeMobileRegType - change Registration type : " + imeiId)
@@ -246,7 +252,7 @@ class AdminController(mobileRepo: MobileRepository, auditRepo: AuditRepository, 
   }
 }
 /**
- * Lets other classes, traits, objects access all the behaviors defined in the class AdminController  
+ * Lets other classes, traits, objects access all the behaviors defined in the class AdminController
  */
 
 object AdminController extends AdminController(MobileRepository, AuditRepository, MailUtil, S3Util)

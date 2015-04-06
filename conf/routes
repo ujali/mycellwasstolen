@@ -3,46 +3,49 @@
 # ~~~~
 
 # Home page
-GET    /                              controllers.Application.index
-GET    /contact-us                    controllers.Resources.contactUs
-GET    /blog                          controllers.Resources.blog
-GET    /faq                           controllers.Resources.faq
-GET    /discussionforum               controllers.Resources.discussionforum
+GET    /                          controllers.Application.index
+GET    /contact-us                controllers.Resources.contactUs
+GET    /blog                      controllers.Resources.blog
+GET    /faq                       controllers.Resources.faq
+GET    /discussionforum           controllers.Resources.discussionforum
 
 
 #registration
-GET    /register-stolen-phone         controllers.MobileController.mobileRegistrationForm
-GET    /register-new-phone            controllers.MobileController.mobileRegistrationSecureForm
-POST   /mobileRegistration            controllers.MobileController.mobileRegistration
-GET    /isImeiExist                   controllers.MobileController.isImeiExist(imeiId: String)
+GET    /register-stolen-phone     controllers.MobileController.mobileRegistrationForm
+GET    /register-new-phone        controllers.MobileController.mobileRegistrationSecureForm
+POST   /mobileRegistration        controllers.MobileController.mobileRegistration
+GET    /isImeiExist               controllers.MobileController.isImeiExist(imeiId: String)
 
 #Javascript Routes
 
-GET    /javascriptRoutes              controllers.Application.javascriptRoutes 
-GET    /mobileStatus                  controllers.MobileController.checkMobileStatus(imeid: String,user:String)
-GET    /mobileStatusForm              controllers.MobileController.mobileStatus
-GET    /mobileModel                   controllers.MobileController.getModels(id:Int)
-GET    /pending                       controllers.AdminController.pending(imeid: String)
-GET    /changeMobileRegType           controllers.AdminController.changeMobileRegType(imeid: String)
-GET    /delete                        controllers.AdminController.deleteMobile(imeid: String)
+GET    /javascriptRoutes          controllers.Application.javascriptRoutes 
+GET    /mobileStatus              controllers.MobileController.checkMobileStatus(imeid: String,user:String)
+GET    /mobileStatusForm          controllers.MobileController.mobileStatus
+GET    /mobileModel               controllers.MobileController.getModels(id:Int)
+GET    /pending                   controllers.AdminController.pending(imeid: String)
+GET    /changeMobileRegType       controllers.AdminController.changeMobileRegType(imeid: String)
+GET    /delete                    controllers.AdminController.deleteMobile(imeid: String)
+
+#Authentication
+GET    /login                     controllers.AuthController.login
+POST   /authenticate              controllers.AuthController.authenticate
+GET    /logout                    controllers.AuthController.logout
 
 #Admin
-GET    /login                         controllers.AuthController.login
-POST   /authenticate                  controllers.AuthController.authenticate
-GET    /logout                        controllers.AuthController.logout
-GET    /admin/mobiles                 controllers.AdminController.mobiles(status:String)
-GET    /admin/brandForm               controllers.MobileController.brandRegisterForm
-POST   /saveMobileName                controllers.MobileController.saveBrand
-GET    /proofDemanded                 controllers.AdminController.proofDemanded(imeid: String,page:String)
-GET    /approve                       controllers.AdminController.approve(imeid: String,page:String)
-GET    /admin/modelRegistrationForm   controllers.MobileController.modelRegistrationForm
-GET    /admin/changeMobileRegType     controllers.AdminController.changeMobileRegTypeForm
-POST   /createMobileModel             controllers.MobileController.saveModel
+GET    /admin                     controllers.AdminController.adminHome
+GET    /requests                  controllers.AdminController.mobiles(status:String)
+GET    /brandForm                 controllers.MobileController.brandRegisterForm
+POST   /saveMobileName            controllers.MobileController.saveBrand
+GET    /proofDemanded             controllers.AdminController.proofDemanded(imeid: String,page:String)
+GET    /approve                   controllers.AdminController.approve(imeid: String,page:String)
+GET    /modelForm                 controllers.MobileController.modelRegistrationForm
+GET    /changeMobileRegTypeForm   controllers.AdminController.changeMobileRegTypeForm
+POST   /createMobileModel         controllers.MobileController.saveModel
 
 #audit
-GET    /registrationRecord            controllers.AuditController.registrationRecordsByYear(date:String)
-GET    /admin/auditpage               controllers.AuditController.auditPage
-POST   /admin/auditIMEID              controllers.AuditController.timestampsByIMEI
-GET    /admin/auditAllRecords         controllers.AuditController.allTimestamps
+GET    /timestamps                controllers.AuditController.timestampForm
+GET    /registrationRecord        controllers.AuditController.registrationRecordsByYear(year:String)
+POST   /auditIMEID                controllers.AuditController.timestampsByIMEI
+GET    /auditAllRecords           controllers.AuditController.allTimestamps
 # Map static resources from the /public folder to the /assets URL path
-GET    /assets/*file                  controllers.Assets.at(path="/public", file)
+GET    /assets/*file              controllers.Assets.at(path="/public", file)

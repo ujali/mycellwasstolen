@@ -53,7 +53,7 @@ class AuthController extends Controller with Secured {
     loginForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.admin.login(formWithErrors)),
       user =>
-        Redirect(routes.AdminController.mobiles("pending")).withSession(Security.username -> user._1))
+        Redirect(routes.AdminController.adminHome()).withSession(Security.username -> user._1))
   }
 
   /**
@@ -61,7 +61,7 @@ class AuthController extends Controller with Secured {
    */
   def logout: Action[AnyContent] = Action {
     Redirect(routes.AuthController.login).withNewSession.flashing(
-      "success" -> "You are now logged out.")
+      "SUCCESS" -> "You are now logged out.")
   }
 }
 
@@ -80,7 +80,7 @@ trait Secured {
    * Handle unauthorized user
    */
   def onUnauthorized(request: RequestHeader): Result = {
-    Results.Redirect(routes.AuthController.login).withNewSession.flashing("success" -> Messages("messages.user.expired"))
+    Results.Redirect(routes.AuthController.login)
   }
 
   def withAuth(f: => String => Request[AnyContent] => Result): Action[AnyContent] = {

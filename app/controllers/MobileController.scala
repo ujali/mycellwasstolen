@@ -92,7 +92,7 @@ class MobileController(mobileRepo: MobileRepository, brandRepo: BrandRepository,
     implicit request =>
       Logger.info("MobileController:brandRegistrationForm -> called")
       val user: Option[User] = Cache.getAs[User](username)
-      Ok(views.html.createMobileNameForm(brandform, user))
+      Ok(views.html.admin.newBrandForm(brandform, user))
   }
 
   /**
@@ -103,7 +103,7 @@ class MobileController(mobileRepo: MobileRepository, brandRepo: BrandRepository,
       Logger.info("MobileController:modelRegistrationForm -> called")
       val user: Option[User] = Cache.getAs[User](username)
       val mobileBrands = brandRepo.getAllBrands
-      Ok(views.html.createMobileModelForm(modelform, mobileBrands, user))
+      Ok(views.html.admin.newModelForm(modelform, mobileBrands, user))
   }
 
   /**
@@ -242,7 +242,7 @@ class MobileController(mobileRepo: MobileRepository, brandRepo: BrandRepository,
       val email = request.session.get(Security.username).getOrElse("")
       val user: Option[User] = Cache.getAs[User](email)
       brandform.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.createMobileNameForm(formWithErrors, user)),
+        formWithErrors => BadRequest(views.html.admin.newBrandForm(formWithErrors, user)),
         brand => {
           if (brandRepo.getAllBrands.filter { x => x.name.equalsIgnoreCase(brand.name) }.isEmpty) {
             val insertedBrand = brandRepo.insertBrand(Brand(brand.name))
@@ -269,7 +269,7 @@ class MobileController(mobileRepo: MobileRepository, brandRepo: BrandRepository,
       val email = request.session.get(Security.username).getOrElse("")
       val user: Option[User] = Cache.getAs[User](email)
       modelform.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.createMobileModelForm(formWithErrors, brands, user)),
+        formWithErrors => BadRequest(views.html.admin.newModelForm(formWithErrors, brands, user)),
         modell => {
           if (modelRepo.getAllModelByBrandId(modell.brandName.toInt).filter { x => x.name.equalsIgnoreCase(modell.modelName) }.isEmpty) {
             val insertedModel = modelRepo.insertModel(Model(modell.modelName, modell.brandName.toInt))
