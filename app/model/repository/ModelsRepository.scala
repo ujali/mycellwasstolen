@@ -9,9 +9,6 @@ import play.api.Logger
 import java.util.Date
 import scala.slick.lifted.ForeignKeyQuery
 
-/**
- * Define all data access layer methods of Mobile Model 
- */
 trait ModelRepository extends ModelTable {
 
   /**
@@ -57,9 +54,6 @@ trait ModelRepository extends ModelTable {
   }
 }
 
-/**
- * Defines schema of Models table 
- */
 trait ModelTable extends BrandTable {
   private[repository] class Models(tag: Tag) extends Table[Model](tag, "models") {
     def id: Column[Option[Int]] = column[Option[Int]]("id", O.PrimaryKey, O.AutoInc)
@@ -67,7 +61,7 @@ trait ModelTable extends BrandTable {
     def name: Column[String] = column[String]("modelName", O DBType ("VARCHAR(30)"))
     def * : scala.slick.lifted.ProvenShape[Model] = (
       name, brandId, id) <> (Model.tupled, Model.unapply)
-    def fkey:ForeignKeyQuery[Brands, Brand] = foreignKey("brand_FK", brandId, brands)(_.id.get, onUpdate = ForeignKeyAction.Restrict,
+    def fkey = foreignKey("brand_FK", brandId, brands)(_.id.get, onUpdate = ForeignKeyAction.Restrict,
       onDelete = ForeignKeyAction.Cascade)
     def modelIndex: scala.slick.lifted.Index = index("idx_model", (name), unique = true)
   }
@@ -75,22 +69,14 @@ trait ModelTable extends BrandTable {
   val autoKeyModels = models returning models.map(_.id)
 }
 
-/**
- * Represents a  Model Record
- */
 case class Model(
   name: String,
   brandId: Int,
   id: Option[Int] = None)
 
-  /**
-   * Represents a Model Form
-   */
 case class ModelForm(
   brandName: String,
   modelName: String)
 
-/**
- * Wraps all method of ModelRepository 
- */
+//Trait companion object
 object ModelRepository extends ModelRepository

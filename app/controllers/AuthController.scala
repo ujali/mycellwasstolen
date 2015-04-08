@@ -1,7 +1,6 @@
 package controllers
 
 import play.api.Logger
-import play.api.Play
 import play.api.Play.current
 import model.repository.User
 import play.api.cache.Cache
@@ -11,8 +10,9 @@ import play.api.i18n.Messages
 import play.api.mvc._
 import views.html
 
+
 /**
- * Contains authorization specific controllers to authorize users
+ * Contains authorization specific controllers to authorize users 
  */
 class AuthController extends Controller with Secured {
 
@@ -31,12 +31,9 @@ class AuthController extends Controller with Secured {
    * @param username of Admin
    * @param password of Admin
    */
-  private def check(username: String, password: String): Boolean = {
-
-    val adminUsername = Play.current.configuration.getString("admin_username").get
-    val adminPassword = Play.current.configuration.getString("admin_password").get
-    if (username == adminUsername && password == adminPassword) {
-      val user = User(adminUsername, adminPassword)
+  def check(username: String, password: String): Boolean = {
+    if (username == "admin" && password == "knol2013") {
+      val user = User("admin", "1234")
       Cache.set(username, user, 60 * 60)
       true
     } else { false }
@@ -46,7 +43,7 @@ class AuthController extends Controller with Secured {
    * Displays the Admin login form
    */
   def login: Action[AnyContent] = Action { implicit request =>
-    Ok(html.admin.login(loginForm))
+    Ok(views.html.admin.contents.login(loginForm))
   }
 
   /**
@@ -54,9 +51,9 @@ class AuthController extends Controller with Secured {
    */
   def authenticate: Action[AnyContent] = Action { implicit request =>
     loginForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.admin.login(formWithErrors)),
+      formWithErrors => BadRequest(views.html.admin.contents.login(formWithErrors)),
       user =>
-        Redirect(routes.AdminController.mobiles("pending")).withSession(Security.username -> user._1))
+        Redirect(routes.AdminController.adminHome()).withSession(Security.username -> user._1))
   }
 
   /**
@@ -64,7 +61,7 @@ class AuthController extends Controller with Secured {
    */
   def logout: Action[AnyContent] = Action {
     Redirect(routes.AuthController.login).withNewSession.flashing(
-      "success" -> "You are now logged out.")
+      "SUCCESS" -> "You are now logged out.")
   }
 }
 
@@ -76,14 +73,14 @@ trait Secured {
   /**
    * Gets user from request
    */
-
+  
   def username(request: RequestHeader): Option[String] = request.session.get(Security.username)
   def unauthorizedSimpleRequest(request: RequestHeader): Result = Results.Redirect(routes.AuthController.login)
   /**
    * Handle unauthorized user
    */
   def onUnauthorized(request: RequestHeader): Result = {
-    Results.Redirect(routes.AuthController.login).withNewSession.flashing("success" -> Messages("messages.user.expired"))
+    Results.Redirect(routes.AuthController.login)
   }
 
   def withAuth(f: => String => Request[AnyContent] => Result): Action[AnyContent] = {
@@ -100,6 +97,6 @@ trait Secured {
 }
 
 /**
- * Lets other classes, packages, traits access all the behaviors defined in the class AuthController
+ * Lets other classes, packages, traits access all the behaviors defined in the class AuthController  
  */
 object AuthController extends AuthController

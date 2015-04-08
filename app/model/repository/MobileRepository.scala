@@ -9,10 +9,10 @@ import utils._
 import scala.collection.mutable.ListBuffer
 import utils.StatusUtil.Status
 import java.sql.Date
-import scala.slick.lifted.ForeignKeyQuery
 
 /**
- * Define all data access layer methods of MobileRegistration   
+ * MobileRepository provides all concrete implementation of
+ * user mobile services
  */
 
 trait MobileRepository extends MobileTable {
@@ -30,7 +30,7 @@ trait MobileRepository extends MobileTable {
       }
     } catch {
       case ex: Exception =>
-        Logger.info("Error in mobile registration" + ex.printStackTrace())
+        Logger.info("Error in insert user" + ex.printStackTrace())
         Left(ex.getMessage())
     }
   }
@@ -156,9 +156,7 @@ trait MobileRepository extends MobileTable {
   }
 }
 
-/**
- * Defines schema of Mobile table 
- */
+// Mapping of mobile Table
 trait MobileTable extends BrandTable with ModelTable {
   import utils.StatusUtil.Status
   private[repository] class Mobiles(tag: Tag) extends Table[Mobile](tag, "mobiles") {
@@ -182,20 +180,17 @@ trait MobileTable extends BrandTable with ModelTable {
       regType, mobileStatus, description, registrationDate, document, otherMobileBrand, otherMobileModel, id) <> ((Mobile.apply _).tupled, Mobile.unapply)
     def mobileIndex: scala.slick.lifted.Index = index("idx_imei", (imeiMeid), unique = true)
 
-    def fkeyBrand:ForeignKeyQuery[Brands, Brand]= foreignKey("brandId_FK", brandId, brands)(_.id.get, onUpdate = ForeignKeyAction.Restrict,
+    def fkeyBrand= foreignKey("brandId_FK", brandId, brands)(_.id.get, onUpdate = ForeignKeyAction.Restrict,
       onDelete = ForeignKeyAction.Cascade)
 
-    def fkeyModel:ForeignKeyQuery[Models, Model] = foreignKey("ModelId_FK", mobileModelId, models)(_.id.get, onUpdate = ForeignKeyAction.Restrict,
+    def fkeyModel = foreignKey("ModelId_FK", mobileModelId, models)(_.id.get, onUpdate = ForeignKeyAction.Restrict,
       onDelete = ForeignKeyAction.Cascade)
   }
   val mobiles = TableQuery[Mobiles]
   val autoKeyMobiles = mobiles returning mobiles.map(_.id)
 
 }
-
-/**
- * Represents the Mobile registration Record
- */
+//Represents the Mobile registration Record
 case class Mobile(
   userName: String,
   brandId: Int,
@@ -214,9 +209,7 @@ case class Mobile(
   otherMobileModel: String,
   id: Option[Int] = None)
 
-/**
- * Represents the Mobile Details Record
- */
+//Represents the Mobile Details Record
 case class MobileDetail(
   userName: String,
   mobileName: String,
@@ -231,14 +224,10 @@ case class MobileDetail(
   otherMobileBrand: String,
   otherMobileModel: String)
 
-/**
- * Represents Registered Mobile Status in the database
- */
+//Represents Registered Mobile Status in the database
 case class MobileStatus(imeiMeid: String)
 
-/**
- * Represents Mobile registration Form
- */
+//Represents Mobile registration Form
 case class MobileRegisterForm(
   userName: String,
   brandId: Int,
@@ -254,17 +243,10 @@ case class MobileRegisterForm(
   otherMobileBrand: String,
   otherMobileModel: String)
 
-/**
- * Represents a Models name  
- */
 case class MobilesNameForm(mobileName: String)
-
-/**
- * Represents a user with username and password
- */
 case class User(email: String, password: String)
 
 /**
- * Wraps the method of trait:MobileRepository
+ * Companion Object extending the Same trait:
  */
 object MobileRepository extends MobileRepository

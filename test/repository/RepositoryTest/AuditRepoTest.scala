@@ -5,8 +5,6 @@ import model.repository._
 import play.api.test.FakeApplication
 import play.api.test.Helpers._
 import utils._
-import model.repository.AuditRepository.audits
-import scala.slick.driver.PostgresDriver.simple._
 
 class AuditRepoTest extends FunSuite {
   val timeStamp = new java.sql.Timestamp(new java.util.Date().getTime)
@@ -24,17 +22,6 @@ class AuditRepoTest extends FunSuite {
       assert(returnedValue === Right(Some(1)))
     }
   }
-  
-  test("AuditRepository: insertTimestamp -> failed") {
-    running(FakeApplication()) {
-      Connection.databaseObject().withSession { implicit session: Session =>
-        audits.ddl.drop
-      }
-      val returnValueOnChange = AuditRepository.insertTimestamp(auditTimestamp)
-      assert(returnValueOnChange.isLeft)
-    }
-  }
-  
 
   //Test listing of all TimeStamp with an IMEID
   test("AuditRepository: getAllTimestampsByIMEID") {

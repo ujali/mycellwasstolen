@@ -10,9 +10,6 @@ import java.util.Date
 import java.sql.Timestamp
 import scala.collection.mutable.ListBuffer
 
-/**
- * Define all data access layer methods of Auditing records
- */
 trait AuditRepository extends AuditTable with MobileRepository {
   /*
    * Inserts new timestamp when an imei number check
@@ -76,9 +73,6 @@ trait AuditRepository extends AuditTable with MobileRepository {
   }
 }
 
-/**
- * Defines schema of audits table 
- */
 trait AuditTable {
   private[repository] class Audits(tag: Tag) extends Table[Audit](tag, "audits") {
     def id: Column[Option[Int]] = column[Option[Int]]("id", O.PrimaryKey, O.AutoInc)
@@ -86,18 +80,12 @@ trait AuditTable {
     def timestamp: Column[Timestamp] = column[Timestamp]("timestamp", O.NotNull)
     def * : scala.slick.lifted.ProvenShape[Audit] = (mobileIMEID, timestamp, id) <> (Audit.tupled, Audit.unapply)
   }
-  //create audit table instance
   val audits = TableQuery[Audits]
-  // create audit table instance with return auto generated id
   val autoKeyAudits = audits returning audits.map(_.id)
 }
 
 /**
- * Represents audit object which is used to report how many request 
- * has been made against particular IMEI with timestamp 
- * @param mobuileIMEID, imei number of mobile
- * @param timestamp, date and time of audit
- * @param id, auto incremented id
+ * Represents audit object
  */
 case class Audit(
   mobileIMEID: String,
@@ -106,11 +94,7 @@ case class Audit(
 
 /**
  * Represents audit form
- * @param imeiMeid, imei number of mobile
  */
 case class AuditForm(imeiMeid: String)
 
-/**
- * Object Wraps methods of the trait AuditRepository
- */
 object AuditRepository extends AuditRepository

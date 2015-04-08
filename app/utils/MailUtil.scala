@@ -6,9 +6,6 @@ import play.api.libs.mailer.Email
 import model.repository.Mobile
 import play.api.Logger
 
-/**
- * Contains mailing functionality 
- */
 trait MailUtil {
 
   // message for stolen registration
@@ -64,7 +61,7 @@ trait MailUtil {
         Seq(email), bodyHtml = Some(message))
       MailerPlugin.send(emailBuilder)
     } catch {
-      case ex: Exception => Logger.error("MailUtil:sendEmail -> failed" + ex)
+      case ex: Exception => Logger.error("MobileController:sendEmail failed please check current mail configuration")
     }
   }
 }

@@ -6,8 +6,6 @@ import model.repository.{ BrandRepository, MobileRepository, ModelRepository }
 import play.api.test.FakeApplication
 import play.api.test.Helpers._
 import utils.StatusUtil.Status
-import utils.Connection
-import scala.slick.driver.PostgresDriver.simple._
 
 /**
  * Class MobileRepoTest: Unit tests the methods in MobileRepository.
@@ -25,10 +23,10 @@ class MobileRepoTest extends FunSuite with MobileRepository with BrandRepository
   test("MobileRepository:insert and get mobile name successfully ") {
     running(FakeApplication()) {
       //Insert a brand to avoid FK violation while inserting mobile record
-      insertBrand(brand)
+      BrandRepository.insertBrand(brand)
       //Insert a model to avoid FK violation while inserting mobile record
-      insertModel(model)
-      val insertedMobile = insertMobileUser(mobileUser)
+      ModelRepository.insertModel(model)
+      val insertedMobile = MobileRepository.insertMobileUser(mobileUser)
       assert(insertedMobile === Right(Some(1)))
     }
   }
@@ -37,13 +35,13 @@ class MobileRepoTest extends FunSuite with MobileRepository with BrandRepository
   test("MobileRepository:insert fails since email is duplicate ") {
     running(FakeApplication()) {
       //Insert a brand to avoid FK violation while inserting mobile record
-      insertBrand(brand)
+      BrandRepository.insertBrand(brand)
       //Insert a model to avoid FK violation while inserting mobile record
-      insertModel(model)
+      ModelRepository.insertModel(model)
       //Insert a Mobile Record first
-      val insertedMobile = insertMobileUser(mobileUser)
+      val insertedMobile = MobileRepository.insertMobileUser(mobileUser)
       //Insert it again to test duplicate entry 
-      val insertedDuplicateMobile = insertMobileUser(mobileUser)
+      val insertedDuplicateMobile = MobileRepository.insertMobileUser(mobileUser)
       println(insertedDuplicateMobile)
       assert(insertedDuplicateMobile.isLeft)
     }
@@ -53,12 +51,12 @@ class MobileRepoTest extends FunSuite with MobileRepository with BrandRepository
   test("MobileRepository: get Mobile by IMEID ") {
     running(FakeApplication()) {
       //Insert a brand to avoid FK violation while inserting mobile record
-      insertBrand(brand)
+      BrandRepository.insertBrand(brand)
       //Insert a model to avoid FK violation while inserting mobile record
-      insertModel(model)
-      insertMobileUser(mobileUser)
-      val mobileUserToCompareWith = getMobileUserByIMEID(imeiInserted)
-      assert(mobileUserToCompareWith.isEmpty == false)
+      ModelRepository.insertModel(model)
+      MobileRepository.insertMobileUser(mobileUser)
+      val mobileUserToCompareWith = MobileRepository.getMobileUserByIMEID(imeiInserted)
+      assert(mobileUserToCompareWith.isEmpty==false)
     }
   }
 
@@ -77,16 +75,6 @@ class MobileRepoTest extends FunSuite with MobileRepository with BrandRepository
     }
   }
 
-  test("MobileRepository:changeStatusToApproveByIMEID -> failed") {
-    running(FakeApplication()) {
-      Connection.databaseObject().withSession { implicit session: Session =>
-        mobiles.ddl.drop
-      }
-      val returnValueOnChange = MobileRepository.changeStatusToApproveByIMEID(imeiInserted)
-      assert(returnValueOnChange.isLeft)
-    }
-  }
-
   //Test the status change of Mobile from pending to DemandProof
   test("MobileRepository: change of Mobile from pending to DemandProof: must return Right(1)") {
     running(FakeApplication()) {
@@ -99,16 +87,6 @@ class MobileRepoTest extends FunSuite with MobileRepository with BrandRepository
       //Changes its status
       val returnValueOnChange = MobileRepository.changeStatusToDemandProofByIMEID(imeiInserted)
       assert(returnValueOnChange === Right(1))
-    }
-  }
-  
-  test("MobileRepository:changeStatusToDemandProofByIMEID -> failed") {
-    running(FakeApplication()) {
-      Connection.databaseObject().withSession { implicit session: Session =>
-        mobiles.ddl.drop
-      }
-      val returnValueOnChange = MobileRepository.changeStatusToDemandProofByIMEID(imeiInserted)
-      assert(returnValueOnChange.isLeft)
     }
   }
 
@@ -126,16 +104,6 @@ class MobileRepoTest extends FunSuite with MobileRepository with BrandRepository
       assert(returnValueOnChange === Right(1))
     }
   }
-  
-  test("MobileRepository:changeRegTypeByIMEID -> failed") {
-    running(FakeApplication()) {
-      Connection.databaseObject().withSession { implicit session: Session =>
-        mobiles.ddl.drop
-      }
-      val returnValueOnChange = MobileRepository.changeRegTypeByIMEID(mobileUser)
-      assert(returnValueOnChange.isLeft)
-    }
-  }
 
   //Test the Retrieval all mobile user with brand and model based on status 
   test("MobileRepository: Retrieval all mobile user with brand and model") {
@@ -148,7 +116,7 @@ class MobileRepoTest extends FunSuite with MobileRepository with BrandRepository
       val insertedMobile = MobileRepository.insertMobileUser((mobileUser))
       //Insert a Brand Record
       val returnValueOnChange = MobileRepository.getAllMobilesUserWithBrandAndModel("pending")
-      assert(returnValueOnChange.isEmpty == false)
+      assert(returnValueOnChange.isEmpty==false)
     }
   }
 
@@ -165,19 +133,9 @@ class MobileRepoTest extends FunSuite with MobileRepository with BrandRepository
       assert(returnValueOnChange === Right(1))
     }
   }
-  
-  test("MobileRepository:deleteMobileUser -> failed") {
-    running(FakeApplication()) {
-      Connection.databaseObject().withSession { implicit session: Session =>
-        mobiles.ddl.drop
-      }
-      val returnValueOnChange = MobileRepository.deleteMobileUser(imeiInserted)
-      assert(returnValueOnChange.isLeft)
-    }
-  }
 
   //Tests change status to Pending by IMEID
-  test("MobileRepository: change of Mobile status to pending: must return Right(1)") {
+  test("MobileRepository: change of Mobile from pending to pending: must return Right(1)") {
     running(FakeApplication()) {
       //Insert a brand to avoid FK violation while inserting mobile record
       BrandRepository.insertBrand(brand)
@@ -189,15 +147,5 @@ class MobileRepoTest extends FunSuite with MobileRepository with BrandRepository
       val returnValueOnChange = MobileRepository.changeStatusToPendingByIMEID(imeiInserted)
       assert(returnValueOnChange === Right(1))
     }
-  }
-  
-  test("MobileRepository:changeStatusToPendingByIMEID -> failed") {
-    running(FakeApplication()) {
-      Connection.databaseObject().withSession { implicit session: Session =>
-        mobiles.ddl.drop
-      }
-      val returnValueOnChange = MobileRepository.changeStatusToPendingByIMEID(imeiInserted)
-      assert(returnValueOnChange.isLeft)
-    }
-  }
+  }  
 }
